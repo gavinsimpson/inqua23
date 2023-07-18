@@ -332,24 +332,6 @@ anim_save("./resources/gam-crs-animation.gif", crs_fit)
 
 Fitting a GAM to data involves finding the weights for the basis functions that produce a spline that fits the data best, subject to some constraints to avoid over fitting
 
-<!--
----
-
-# Practically
-
-```{r example-mgcv-code, eval = FALSE, echo = TRUE}
-m <- mgcv::gam(response ~ s(time, k = 20), # smooth of time
-    data = df,                             # where to find the variables
-    family = gaussian(),                   # conditional distribution of Y
-    method = "REML")                       # smothing parameter method
-```
-
-❗Critically, model things forwards in time &mdash; not age ❗
-
-See the `.R` scripts in the Github repo for the detail
-
--->
-
 ---
 class: inverse middle center subsection
 
@@ -365,7 +347,8 @@ background-size: auto
 .row[
 
 .col-7[
-Mostly model the mean
+
+We mostly model the mean
 
 But other parameters are important
 
