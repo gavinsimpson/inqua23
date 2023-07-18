@@ -1046,7 +1046,7 @@ sw_tidy <- sw |>
 ok_pal <- palette.colors(3)[-1] |> unname()
 
 iso_lab <- function(x) {
-    c("d15n" = "delta^{15}*N", "d15n" = "delta^{13}*C")
+    c("d13c" = "delta^{13}*C", "d15n" = "delta^{15}*N")
 }
 
 pm_lab <- "\u2030"
@@ -1111,9 +1111,11 @@ m_cop_T     <- gjrm(fml_t, data = sw, margins = c("N", "N"), model = "B",
 
 # Copulas
 
-Function representing a joint distribution as a mapping from the CDFs of its marginals
+Copula distributional GAM
 
-Defines a general way to think about dependence between random variables
+Copulas bind two models/distributions together
+
+Define a general way to think about dependence between random variables
 
 Starting to be used in ecology:
 
