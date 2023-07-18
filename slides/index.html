@@ -4,7 +4,7 @@
     <title>Applying statistical thinking to palaeo data through GAMs</title>
     <meta charset="utf-8" />
     <meta name="author" content="Gavin Simpson" />
-    <meta name="date" content="2023-07-18" />
+    <meta name="date" content="2023-07-19" />
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" />
     <link rel="stylesheet" href="slides.css" type="text/css" />
@@ -23,26 +23,114 @@ class: inverse, middle, left, my-title-slide, title-slide
 ### Aarhus University
 ]
 .date[
-### July 18, 2023
+### July 19, 2023
 ]
 
 ---
 
+
+
+
+
+
+.row[
+
+.col-6[
+### Slides &amp; code
+
+[bit.ly/inqua-talk-2023](https://bit.ly/inqua-talk-2023)
+
+&amp;copy; Simpson (2020&amp;ndash;2023) [![Creative Commons Licence](https://i.creativecommons.org/l/by/4.0/88x31.png)](http://creativecommons.org/licenses/by/4.0/)
+]
+
+.col-6[
+
+.center[
+
+&lt;img src="resources/bit.ly_inqua-talk-2023.png" width="60%" style="display: block; margin: auto;" /&gt;
+]
+
+]
+]
+
+
+### Land acknowledgment
+
+* This work was started at University of Regina, on Treaty 4 lands
+
+### Funding
+
+.row[
+
+.col-4[
+.center[![:scale 80%](./resources/NSERC_C.svg)]
+]
+
+.col-4[
+.center[![:scale 100%](./resources/fgsr-logo.jpg)]
+]
+
+.col-4[
+.center[![:scale 100%](./resources/AUFF_logo_en.png)]
+]
+
+]
+
+
+???
+
+This research was started while I was at the University of Regina, which is situated on the territories of the nay-hi-yuh-wuk (Cree; nêhiyawak), uh-nish-i-naa-payk (Salteaux; Anihšināpēk), Dakota, Lakota, and Nakoda, and the homeland of the Métis/Michif Nation.
+
+My work has been funded by NSERC, Faculty of Graduate Studies &amp; Research at University of Regina, and Aarhus University Research Fund
+
+Thanks to Quinn and Jack for inviting me to give this talk
+
+---
+class: inverse
 background-image: url("resources/PS1920-1_0-750_sediment-core_hg.jpg")
 background-position: right center
 background-size: contain
 
+# Statistical thinking &amp; palaeo
 
+Palaeo data are challenging
 
+Important to grapple with these "problems"
 
+Approaching data from the point of view of modelling process in our systems statistically
 
+Estimate quantities of interest &amp; quantify their uncertainty
 
-# Motivating slide
+???
+
+We all know palaeo data are challenging to analyse, for a whole host of reasons &amp; the don't play well with formal statistical time series methods
+
+However, it is important to grapple with these problems and address them statistically
+
+When I talk about statistical thinking and applying it to palaeo data, I'm thinking about having researchers approach the data from the view point of modelling them statistically, and using statistical models to estimate quantities of interest from a statistical model
 
 ---
 class: inverse middle center subsection
 
-# GAMs
+# Generalized additive models
+
+???
+
+GAMs are a broad model class that are suited to modelling palaeo data
+
+GAMs are models that represent the effects of variables on the response using smooth functions
+
+They trivially handle the irregularity in time of most sequences
+
+---
+
+# GAMs are built from splines
+
+.center[![](resources/spline-anim.gif)]
+
+???
+
+GAMs are built up from splines, functions that have some definition of smoothness
 
 ---
 
@@ -56,7 +144,7 @@ Splines are built up from basis functions
 
 Here I'm showing a cubic regression spline basis with 10 knots/functions
 
-We weight each basis function to get a spline. Here all the basis functions have the same weight so they would fit a horizontal line
+We weight each basis function to get a spline.
 
 ---
 
@@ -68,7 +156,7 @@ We weight each basis function to get a spline. Here all the basis functions have
 
 ???
 
-But if we choose different weights we get more wiggly spline
+If we choose different weights we get more wiggly spline
 
 Each of the splines I showed you earlier are all generated from the same basis functions but using different weights
 
@@ -82,7 +170,26 @@ Each of the splines I showed you earlier are all generated from the same basis f
 
 ???
 
-Fitting a GAM involves finding the weights for the basis functions that produce a spline that fits the data best, subject to some constraints
+Fitting a GAM to data involves finding the weights for the basis functions that produce a spline that fits the data best, subject to some constraints to avoid over fitting
+
+&lt;!--
+---
+
+# Practically
+
+
+```r
+m &lt;- mgcv::gam(response ~ s(time, k = 20), # smooth of time
+    data = df,                             # where to find the variables
+    family = gaussian(),                   # conditional distribution of Y
+    method = "REML")                       # smothing parameter method
+```
+
+❗Critically, model things forwards in time &amp;mdash; not age ❗
+
+See the `.R` scripts in the Github repo for the detail
+
+--&gt;
 
 ---
 class: inverse middle center subsection
@@ -104,6 +211,9 @@ Mostly model the mean
 But other parameters are important
 
 ...and of ecological interest
+
+Also a way to handle the time-varying amount of time averaging in non-annually laminated sediments
+
 ]
 
 .col-5[
@@ -156,9 +266,8 @@ Variance, however, is much harder to estimate from data
 .row[
 
 .col-6[
-Also a way to handle the time-varying amount of time averaging in non-annually laminated sediments
 
-Talked about this at INQUA 2019 in Dublin
+See my talk @ INQUA 2019 in Dublin
 ]
 
 .col-6[
@@ -172,26 +281,331 @@ class: inverse middle center subsection
 
 # Rates of change
 
+
+
 ---
 
 # Rates of change
 
+Knowing how quickly systems changed in the past can be used a to put current or future rates of change in context
+
+Long history of RoC analysis in palaeo (Birks &amp; Gordon, 1985) &amp; recent updates ([RRatepol 📦 Ondřej Mottl](https://doi.org/10.1016/j.revpalbo.2021.104483))
+
+An alternative is to use the _derivatives_ of temporal smooths
+
+???
+
+Most options are not grounded in a statistical model &amp;mdash; makeing inference difficult
+
+---
+
+# Finite differences
+
+We don't have an equation for smooths so mathy derivatives are out&amp;hellip;
+
+But we can use finite differences to estimate them
+
+&lt;img src="index_files/figure-html/finite-differences-plot-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+
+???
+
+We do actually have an equation but we'd need to figure it out and that is tedious and hard
+
+---
+
+# Rate of change
+
+For a single variable, this is relatively simple
+
+&lt;img src="index_files/figure-html/display-foram-data-1.svg" width="80%" style="display: block; margin: auto;" /&gt;
+
+[Taricco, _et al_ (2016) _Scientific Data_ **3**, 160042](https://doi.org/10.1038/sdata.2016.42)
+
+???
+
+Gulf of Taranto (Ionian Sea)
+
+Oxygen isotope composition δ18O of planktonic foraminifera in one of the cores extracted from the Gallipoli Terrace
+
+---
+
+# Estimate the trend
+
+![](index_files/figure-html/display-foram-gam-1.svg)&lt;!-- --&gt;
+
+---
+
+# Compute derivatives = RoC
+
+![](index_files/figure-html/display-foram-derivs-1.svg)&lt;!-- --&gt;
+
+???
+
+Above the 0 line 
+
+---
+
+# Compositional rate of change
+
+More difficult with compositional data
+
+Typically, data are counts from a total &amp;mdash; closed compositional data
+
+Can't use a Hierarchical GAM for these data
+
+Multinomial or Dirichlet models would be the correct statsy way to go
+
+But the number of taxa is problematic
+
+---
+
+# Dimension reduction
+
+Need dimension reduction, but not PCA or CA etc
+
+We don't want to break non-linear trends over multiple axes
+
+Use a topic model, which
+
+1. finds groups of taxa that tend to occur together &amp;mdash; *associations*
+2. models each sample as different proportions of the *associations*
+
+More ecologically realistic
+
+--
+
+After application of the topic model we are typically fitting a Dirichlet model to the proportions of a few (&lt;= 10) associations of species
+
+---
+
+# Topic models &amp;mdash; moar
+
+PaleoEcoGen Seminar 2022 slides &amp; recording
+
+.row[
+.col-6[
+&lt;img src="resources/bit.ly_paleoecogen-gavin.png" width="960" /&gt;
+]
+
+.col-6[
+&lt;img src="resources/bit.ly_paleoecogen-video.png" width="960" /&gt;
+
+]
+]
+
+
+
+---
+
+# Dirichlet GAM
+
+.row[
+
+.col-6[
+Dirichlet distribution is an extension of the beta to 3+ classes
+
+% sand, silt clay
+
+Such data lie on a simplex; `\(k\)` classes have `\(k-1\)` dimensions
+
+Fitted using brms 📦 &amp; Stan
+]
+
+.col-6[
+&lt;img src="resources/page1-1500px-Dirichlet.pdf.jpg" width="2000" /&gt;
+]
+]
+
+.small[
+
+```
+##              1         2            3            4            5            6
+## 1 0.0001269863 0.7735201 0.1929165150 0.0331824691 0.0001269863 0.0001269862
+## 2 0.0001229692 0.7295627 0.2575480141 0.0125203925 0.0001229692 0.0001229691
+## 3 0.0001198470 0.9130680 0.0809658414 0.0056065835 0.0001198469 0.0001198469
+## 4 0.0001056662 0.8557656 0.1438117623 0.0001056661 0.0001056660 0.0001056660
+## 5 0.0001294743 0.9895075 0.0001294743 0.0099746407 0.0001294742 0.0001294742
+## 6 0.0001267428 0.9451821 0.0543109606 0.0001267427 0.0001267427 0.0001267426
+```
+]
+
+---
+
+# Abernethy Forest
+
+&lt;img src="index_files/figure-html/abernethy-strat-plot-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
+
+Birks &amp; Mathewes (1978) _New Phytologist_ **80**, 455-484.
+
+---
+
+# Trends in species associations
+
+![](index_files/figure-html/plot-dirichlet-trends-1.svg)&lt;!-- --&gt;
+
+---
+
+# Compute derivatives of trends
+
+![](index_files/figure-html/plot-dirichlet-derivatives-1.svg)&lt;!-- --&gt;
+
+---
+
+# Take the absolute values |d|
+
+![](index_files/figure-html/plot-dirichlet-abs-derivatives-1.svg)&lt;!-- --&gt;
+
+---
+
+# Sum |d| at each time point - RoC
+
+![](index_files/figure-html/plot-dirichlet-roc-1.svg)&lt;!-- --&gt;
+
+---
+
+# 
+
+
+![](index_files/figure-html/compare-with-rratepol-1.svg)&lt;!-- --&gt;
+
 ---
 class: inverse middle center subsection
 
-# Correlation
+# Correlating time series
+
+---
+
+# How correlated are variables in time?
+
+![](index_files/figure-html/copula-gamlss-load-plot-data-1.svg)&lt;!-- --&gt;
+
+
+
+---
+
+# Copulas
+
+Function representing a joint distribution as a mapping from the CDFs of its marginals
+
+Defines a general way to think about dependence between random variables
+
+Starting to be used in ecology:
+
+* Popovic, Hui, Warton, 2018. J. Multivar. Anal. 165, 86–100. doi: 10/dzx9
+* Anderson et al 2019. Ecol. Evol. 44, 182. doi: 10/dzzb
+
+---
+
+# Examples of copulas
+
+![](index_files/figure-html/copula-examples-1.svg)&lt;!-- --&gt;
+
+---
+
+# Copula distributional GAMs
+
+Model the parameters (mean and variance) of each stable isotope time series, plus the copula parameter `\(\theta\)` as an extra linear predictor
+
+.small[
+`$$\begin{align}
+F(y_{\mathsf{\delta^{15}N}_{i}}, y_{\mathsf{\delta^{13}C}_{i}} | \vartheta^{k} ) &amp; = \mathcal{C}(F_{\mathsf{\delta^{15}N}_{i}}(y_{\mathsf{\delta^{15}N}_{i}} | \mu_{\mathsf{\delta^{15}N}_{i}}, \sigma_{\mathsf{\delta^{15}N}_{i}}), F_{\mathsf{\delta^{13}C}_{i}}(y_{\mathsf{\delta^{13}C}_{i}} | \mu_{\mathsf{\delta^{13}C}_{i}}, \sigma_{\mathsf{\delta^{13}C}_{i}}), \theta) \\
+y_{\mathsf{\delta^{15}N}_{i}} &amp; \sim \mathcal{N}(\mu_{\mathsf{\delta^{15}N}_{i}}, \sigma_{\mathsf{\delta^{15}N}_{i}}) \\
+y_{\mathsf{\delta^{13}C}_{i}} &amp; \sim \mathcal{N}(\mu_{\mathsf{\delta^{13}C}_{i}}, \sigma_{\mathsf{\delta^{13}C}_{i}})
+\end{align}$$`
+]
+
+`$$\begin{align}
+\log(\mu_{\mathsf{\delta^{15}N}_{i}}) &amp; = \beta^{\mu_{\mathsf{\delta^{15}N}}}_0 + f^{\mu_{\mathsf{\delta^{15}N}}}(\text{Year}_i) \\
+\log(\mu_{\mathsf{\delta^{13}C}_{i}}) &amp; = \beta^{\mu_{\mathsf{\delta^{13}C}}}_0 + f^{\mu_{\mathsf{\delta^{13}C}}}(\text{Year}_i) \\
+\log(\sigma_{\mathsf{\delta^{15}N}_{i}}) &amp; = \beta^{\sigma_{\mathsf{\delta^{15}N}}}_0 \\
+\log(\sigma_{\mathsf{\delta^{13}C}_{i}}) &amp; = \beta^{\sigma_{\mathsf{\delta^{13}C}}}_0 \\
+g(\theta_i)   &amp; = \beta^{\theta}_0 + f^{\theta}(\text{Year}_i)
+\end{align}$$`
+
+---
+
+# Copulas &amp;mdash; AIC
+
+.row[
+
+.col-6[
+
+Fit a range of copula types
+
+* Bivariate normal
+* Frank
+* Ali-Mikhail-Haq
+* Farlie-Gumbel-Morgenstern
+* Plackett
+* Student t
+* Hougaard
+* Clayton (0, 270)
+* Gumbel (0, 90, 180, 270)
+* Joe (0, 90)
+
+AIC to select best-fitting model
+
+]
+
+.col-6[
+
+.small[
+
+|model      |       df|       AIC|
+|:----------|--------:|---------:|
+|m_cop_G270 | 17.41895| -24.21843|
+|m_cop_G90  | 17.50362| -22.18304|
+|m_cop_N    | 18.47071| -21.46334|
+|m_cop_F    | 18.16605| -20.85806|
+|m_cop_PL   | 17.62977| -20.79832|
+|m_cop_T    | 18.39205| -16.31174|
+|m_cop_AMH  | 17.64876| -14.93747|
+|m_cop_FGM  | 17.49500| -14.81073|
+|m_cop_C270 | 17.31024| -13.66620|
+|m_cop_J90  | 17.24088| -13.40605|
+]
+
+]
+
+]
+
+---
+
+# Estimated correlation
+
+![](index_files/figure-html/plot-copula-1.svg)&lt;!-- --&gt;
+
+---
+
+# Summary I
+
+GAMs &amp; their extensions are one way to adress many common questions asked of palaeo data
+
+GAMs are relatively simple &amp; familiar
+
+Incredibly powerful models but remain interprettable
+
+---
+
+# Summary II
+
+Don't be afraid to think beyond the usual quantitiative methods
+
+Reach out to colleagues for help, collaborate, etc.
+
+As a community we need to take statistical training more seriously for our ECRs
 
 ---
 
 # Thank you &amp; More 📷
 
-Mail: gavin@anivet.au.dk
+📨 gavin@anivet.au.dk
 
-[github.com/gavinsimpson/circle-u-lake-ice-phenology](https://github.com/gavinsimpson/circle-u-lake-ice-phenology)
+💻 [github.com/gavinsimpson/inqua23](https://github.com/gavinsimpson/inqu23)
 
 .center[
 
-
+&lt;img src="resources/bit.ly_inqua-talk-2023.png" width="45%" style="display: block; margin: auto;" /&gt;
 ]
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
