@@ -79,11 +79,13 @@ class: inverse, middle, left, my-title-slide, title-slide
 
 ???
 
+Thanks to Quinn and Jack for inviting me to give this talk
+
+All my slides and code are on GitHub. The QR code here will take you to the slides - it will be shown again at the end as well. There will be other QR codes in the slides that will take you to extra information that I don't have time to cover today
+
 This research was started while I was at the University of Regina, which is situated on the territories of the nay-hi-yuh-wuk (Cree; nêhiyawak), uh-nish-i-naa-payk (Salteaux; Anihšināpēk), Dakota, Lakota, and Nakoda, and the homeland of the Métis/Michif Nation.
 
 My work has been funded by NSERC, Faculty of Graduate Studies &amp; Research at University of Regina, and Aarhus University Research Fund
-
-Thanks to Quinn and Jack for inviting me to give this talk
 
 ---
 class: inverse
@@ -103,7 +105,7 @@ Estimate quantities of interest &amp; quantify their uncertainty
 
 ???
 
-We all know palaeo data are challenging to analyse, for a whole host of reasons &amp; the don't play well with formal statistical time series methods
+We all know palaeo data are challenging to analyse, for a whole host of reasons &amp; they don't play well with formal statistical time series methods
 
 However, it is important to grapple with these problems and address them statistically
 
@@ -116,11 +118,12 @@ class: inverse middle center subsection
 
 ???
 
+One such statistical model that I have found useful is the Generalized additive model; 
+for example, they trivially handle the irregularity in time of most sequences
+
 GAMs are a broad model class that are suited to modelling palaeo data
 
 GAMs are models that represent the effects of variables on the response using smooth functions
-
-They trivially handle the irregularity in time of most sequences
 
 ---
 
@@ -130,11 +133,11 @@ They trivially handle the irregularity in time of most sequences
 
 ???
 
-GAMs are built up from splines, functions that have some definition of smoothness
+GAMs use splines for the smooth functions
 
 ---
 
-# Splines formed from basis functions
+# Splines are formed from basis functions
 
 ![](index_files/figure-html/basis-functions-1.svg)&lt;!-- --&gt;
 
@@ -144,7 +147,7 @@ Splines are built up from basis functions
 
 Here I'm showing a cubic regression spline basis with 10 knots/functions
 
-We weight each basis function to get a spline.
+If we weight each basis function and sum them up, we get a spline
 
 ---
 
@@ -156,7 +159,7 @@ We weight each basis function to get a spline.
 
 ???
 
-If we choose different weights we get more wiggly spline
+If we choose different weights we get more wiggly splines
 
 Each of the splines I showed you earlier are all generated from the same basis functions but using different weights
 
@@ -194,7 +197,7 @@ But other parameters are important
 
 ...and of ecological interest
 
-Also a way to handle the time-varying amount of time averaging in non-annually laminated sediments
+Also a way to handle the varying amount of time averaging (precision) in non-annually laminated sediments
 
 ]
 
@@ -277,15 +280,15 @@ An alternative is to use the _derivatives_ of temporal smooths
 
 ???
 
-Most options are not grounded in a statistical model &amp;mdash; makeing inference difficult
+Most options are not grounded in a statistical model &amp;mdash; making inference difficult
 
 ---
 
 # Finite differences
 
-We don't have an equation for smooths so mathy derivatives are out&amp;hellip;
+We don't have an equation for splines, so mathy derivatives are out&amp;hellip;
 
-But we can use finite differences to estimate them
+But we can use _finite differences_ to estimate them
 
 &lt;img src="index_files/figure-html/finite-differences-plot-1.svg" width="90%" style="display: block; margin: auto;" /&gt;
 
@@ -323,21 +326,31 @@ Oxygen isotope composition δ18O of planktonic foraminifera in one of the cores 
 
 ???
 
-Above the 0 line 
+Above the 0 line d18O is increasingm below the line it is decreasing
+
+We can compute the uncertainty in the derivative (RoC) that arises from the uncertainty in the estimated trend
+
+Where the uncertainty band on the derivative excludes 0 we might also infer the istopes are changing in a way that is inconsistent with no change
 
 ---
 
 # Compositional rate of change
 
-More difficult with compositional data
-
-Typically, data are counts from a total &amp;mdash; closed compositional data
+Compositional data are counts from a total &amp;mdash; closed compositional data
 
 Can't use a Hierarchical GAM for these data
 
 Multinomial or Dirichlet models would be the correct statsy way to go
 
 But the number of taxa is problematic
+
+???
+
+Doing this with compositional data is a bit more difficult
+
+Because the data are close compositional due to the fixed sample total count we can't use hierarchical GAMs
+
+Fitting a multinomial or Dirichlet GAM would be the way to go, but we typically have too many taxa
 
 ---
 
@@ -354,6 +367,14 @@ Use a topic model, which
 
 More ecologically realistic
 
+???
+
+So we need to reduce the dimensionalty in some way
+
+PCA and CA are not useful as they split up trends into separate, uncorrelated components
+
+Instead we could use a topic model
+
 --
 
 After application of the topic model we are typically fitting a Dirichlet model to the proportions of a few (&lt;= 10) associations of species
@@ -362,7 +383,7 @@ After application of the topic model we are typically fitting a Dirichlet model 
 
 # Topic models &amp;mdash; moar
 
-PaleoEcoGen Seminar 2022 slides &amp; recording
+PaleoEcoGen Seminar 2022 [slides](https://bit.ly/paleoecogen-gavin) &amp; [recording](https://bit.ly/paleoecogen-video)
 
 .row[
 .col-6[
@@ -375,6 +396,10 @@ PaleoEcoGen Seminar 2022 slides &amp; recording
 ]
 ]
 
+???
+
+I don't have time to explain topic models here, but I recently gave in the PAGES PaleoEcoGen seminar series that includes an explanation of them. The QR codes are links to the slides and the zoom recording of that talk
+
 
 
 ---
@@ -384,8 +409,6 @@ PaleoEcoGen Seminar 2022 slides &amp; recording
 .row[
 
 .col-6[
-Dirichlet distribution is an extension of the beta to 3+ classes
-
 % sand, silt clay
 
 Such data lie on a simplex; `\(k\)` classes have `\(k-1\)` dimensions
@@ -411,6 +434,14 @@ Fitted using brms 📦 &amp; Stan
 ```
 ]
 
+???
+
+Having reduced the many taxa to a few associations, we model their proportions with a Dirichlet GAM
+
+The classic example of Dirichlet distributed data is % sand, silt, and clay. You only need two of these to deduce all three proportions
+
+Technically we say such data (samples) lie on a simplex with 1 fewer dimensions than "types"
+
 ---
 
 # Abernethy Forest
@@ -419,11 +450,19 @@ Fitted using brms 📦 &amp; Stan
 
 Birks &amp; Mathewes (1978) _New Phytologist_ **80**, 455-484.
 
+???
+
+To illustrate the approach I'll use the classic late glacial pollen data from Abernethy Forest, Scotland, of Birks and Mathewes
+
 ---
 
 # Trends in species associations
 
 ![](index_files/figure-html/plot-dirichlet-trends-1.svg)&lt;!-- --&gt;
+
+???
+
+Firstly, we estimate the trends in the relative composition of each association of taxa using the Dirichlet GAM
 
 ---
 
@@ -431,11 +470,19 @@ Birks &amp; Mathewes (1978) _New Phytologist_ **80**, 455-484.
 
 ![](index_files/figure-html/plot-dirichlet-derivatives-1.svg)&lt;!-- --&gt;
 
+???
+
+Then we compute the derivatives of those trends using finite differences
+
 ---
 
 # Take the absolute values |d|
 
 ![](index_files/figure-html/plot-dirichlet-abs-derivatives-1.svg)&lt;!-- --&gt;
+
+???
+
+We take the absolute value of the derivatve as decreases are as important as increases
 
 ---
 
@@ -443,6 +490,9 @@ Birks &amp; Mathewes (1978) _New Phytologist_ **80**, 455-484.
 
 ![](index_files/figure-html/plot-dirichlet-roc-1.svg)&lt;!-- --&gt;
 
+???
+
+And then we sum the absolute derivative to get our estimate of the rate of change or turnover
 ---
 
 # 
@@ -450,10 +500,18 @@ Birks &amp; Mathewes (1978) _New Phytologist_ **80**, 455-484.
 
 ![](index_files/figure-html/compare-with-rratepol-1.svg)&lt;!-- --&gt;
 
+???
+
+If we compare with a basic run of RRatepol, we see similar features in the rate of change, but there are differences in some of the detail that are worthy of further investigation
+
 ---
 class: inverse middle center subsection
 
 # Correlating time series
+
+???
+
+The last example I want to show is how we can use GAMs to estimate the correlation between time series
 
 ---
 
@@ -462,6 +520,12 @@ class: inverse middle center subsection
 ![](index_files/figure-html/copula-gamlss-load-plot-data-1.svg)&lt;!-- --&gt;
 
 
+
+???
+
+Here I'm showing a stable isotope record of 13C and 15N in bulk organic matter from Small Water, a small corrie lake on the edge of the English Lake District
+
+We were interested in investigating biogeochemical changes due to atmospheric deposition over the last couple of hundred years
 
 ---
 
@@ -478,11 +542,29 @@ Starting to be used in ecology:
 * Popovic, Hui, Warton, 2018. J. Multivar. Anal. 165, 86–100. doi: 10/dzx9
 * Anderson et al 2019. Ecol. Evol. 44, 182. doi: 10/dzzb
 
+???
+
+To correlate the two records we need to model them and their correlation over time
+
+We will use a copula distributional GAM for this
+
+The new bit, the copula, is a function that binds distributions or models together in a way that estimates the dependence between the two data series
+
+Copulas are a general way to think about the dependence between variables that extends the idea of bivariate normality and Pearson's product moment correlation
+
 ---
 
 # Examples of copulas
 
 ![](index_files/figure-html/copula-examples-1.svg)&lt;!-- --&gt;
+
+???
+
+Here I am showing different copulas to link two normally distributed data sets
+
+The Normal and t copula are familiar and relate directly to the correlation coefficients
+
+The Clayton and Gumbel copulas are different; they model differences in tail dependences, where the data can be uncorrelated in one tail and correlated in the other
 
 ---
 
@@ -505,6 +587,12 @@ y_{\mathsf{\delta^{13}C}_{i}} &amp; \sim \mathcal{N}(\mu_{\mathsf{\delta^{13}C}_
 \log(\sigma_{\mathsf{\delta^{13}C}_{i}}) &amp; = \beta^{\sigma_{\mathsf{\delta^{13}C}}}_0 \\
 g(\theta_i)   &amp; = \beta^{\theta}_0 + f^{\theta}(\text{Year}_i)
 \end{align}$$`
+
+???
+
+This is the nastiest slides I'll show, but the important point is in these lines at the bottom
+
+We note that I am modelling the means of both records with smooths of time, that I am assuming no change in variance (precision), and most importantly for this example, that I am modelling the correlation between to two series using a smooth function of time
 
 ---
 
@@ -553,11 +641,25 @@ AIC to select best-fitting model
 
 ]
 
+???
+
+There are many kinds of copula to choose from and selecting just one that matches your data makes model selection more difficult
+
+Instead we fit many different kinds of copula and choose the one (or several) that are most compatible with the data, say using AIC
+
+Here we see that Gumbel copula (rotated 270 degrees) gives the best fit, but several other copulas do similarly
+
 ---
 
 # Estimated correlation
 
 ![](index_files/figure-html/plot-copula-1.svg)&lt;!-- --&gt;
+
+???
+
+We modelled `\(\theta\)` but is is easier to convert this to equivalent Kendall's `\(\tau\)`
+
+Here I'm showing the results from the top few copula models, which all suggest the same thing, that the two series become gradually uncorrelated over time, which we would interpret as indications that the two major biogeochemical cycles in the lake became decoupled due to the input of nitrogen to the ctachment from atmospheric deposition
 
 ---
 
