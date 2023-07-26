@@ -4,11 +4,13 @@ This repo contains the slide deck and R code for my session keynote at INQUA 202
 
 [![DOI](https://zenodo.org/badge/665432680.svg)](https://zenodo.org/badge/latestdoi/665432680)
 
-Please cite as: Simpson, Gavin L. (2023, July 13-20) _Applying statistical thinking to palaeo data through GAMs_ [Session keynote]. XXI Congress of the International Union for Quaternary Research (INQUA), Rome, Italy. [10.5281/zenodo.8186141](https://doi.org/10.5281/zenodo.8186141)
+Rendered slides: [HTML Slide Deck](https://gavinsimpson.github.io/inqua23/slides/)
 
 ### Gavin Simpson
 
-### Aarhus University, Denmark
+### Department of Animal and Veterinary Sciences, Aarhus University, Denmark
+
+#### Abstract
 
 Palaeoecological and palaeoenvironmental stratigraphic data exhibit a number of
 features that make them complex to analyse; for example they
@@ -48,3 +50,9 @@ itself changes over time.
 
 In each case I present a relevant motivating example and supplement the talk
 with fully worked examples in R that are available on GitHub.
+
+#### Citation
+
+Please cite as:
+
+Simpson, Gavin L. (2023, July 13-20) _Applying statistical thinking to palaeo data through GAMs_ [Session keynote]. XXI Congress of the International Union for Quaternary Research (INQUA), Rome, Italy. [10.5281/zenodo.8186141](https://doi.org/10.5281/zenodo.8186141)
